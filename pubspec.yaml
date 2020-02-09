@@ -19,11 +19,29 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  # 多语言支持
+  flutter_localizations:
+    sdk: flutter
+  flutter_cupertino_localizations: ^1.0.1
   cupertino_icons: ^0.1.2
   sqflite: ^1.2.0
+  # Dart 常用工具类库 https://github.com/Sky24n/common_utils
+  common_utils: ^1.1.3
+  # Flutter 常用工具类库 https://github.com/Sky24n/flustars
+  flustars: 0.2.6+1
+  # 选择时间插件 https://github.com/dylanwuzh/flutter-cupertino-date-picker/blob/master/README_zh-cn.md
+  flutter_cupertino_date_picker: ^1.0.12
+  # 图片选择器 https://github.com/Sh1d0w/multi_image_picker
+  multi_image_picker: ^4.6.1
+  # Toast插件 https://github.com/OpenFlutter/flutter_oktoast
+  oktoast: ^2.2.0
+  # 获取系统文件路径 https://github.com/flutter/plugins/tree/master/packages/path_provider
+  path_provider: ^1.5.1
+  # 跨平台路径操作库 https://github.com/dart-lang/path
+  path: ^1.6.4
+  # 下拉刷新上拉加载库 https://github.com/xuelongqy/flutter_easyrefresh
+  flutter_easyrefresh: ^2.0.8
+  assets_audio_player: ^1.0.1
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +66,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/music/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
