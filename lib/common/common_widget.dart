@@ -139,6 +139,66 @@ class EditRowWidget extends StatelessWidget {
   }
 }
 
+//多行文本输入控件
+class TextAreaWidget extends StatelessWidget {
+  final String title;
+  final String hintText;
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+  final GestureTapCallback onTap;
+  final int maxLines;
+
+  TextAreaWidget({
+    Key key,
+    this.title,
+    this.hintText = '请输入',
+    this.controller,
+    this.onChanged,
+    this.onTap,
+    this.maxLines = 4,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        title != null
+            ? Container(
+          height: 46,
+          child: Row(
+            children: <Widget>[
+              Text(
+                '$title',
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+        )
+            : Gaps.empty,
+        Container(
+          child: TextField(
+            onTap: onTap ?? () {},
+            controller: controller,
+            onChanged: onChanged,
+            textAlign: TextAlign.start,
+            maxLines: maxLines,
+            style: TextStyle(fontSize: 15),
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.only(top: 0, bottom: 16),
+              hintText: '$hintText',
+              hintStyle: TextStyle(fontSize: 15),
+              border: UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
 //自定义裁剪按钮
 class ClipButton extends StatelessWidget {
   final double height;
