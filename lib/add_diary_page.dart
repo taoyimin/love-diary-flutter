@@ -106,155 +106,164 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
           )
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 16,
-        ),
-        child: Column(
-          children: <Widget>[
-            SelectRowWidget(
-              title: '时间',
-              content:
-                  '${DateUtil.formatDateMs(diary?.date, format: 'yyyy年MM月dd日')}',
-              onTap: () {
-                DatePicker.showDatePicker(
-                  context,
-                  locale: DateTimePickerLocale.zh_cn,
-                  onClose: () {},
-                  onConfirm: (dateTime, selectedIndex) {
-                    setState(() {
-                      diary.date = dateTime.millisecondsSinceEpoch;
-                    });
-                  },
-                );
-              },
-            ),
-            Gaps.hLine,
-            EditRowWidget(
-              title: '内容',
-              controller: contentController,
-            ),
-            Gaps.hLine,
-            EditRowWidget(
-              title: '成就',
-              controller: achievementController,
-            ),
-            Gaps.hLine,
-            EditRowWidget(
-              title: '节日',
-              controller: festivalController,
-            ),
-            Gaps.hLine,
-            Gaps.vGap5,
-            //没有选取附件则隐藏GridView
-            Offstage(
-              offstage: diary.imageList == null || diary.imageList.length == 0,
-              child: GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 4,
-                childAspectRatio: 1,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 0,
-                  vertical: 5,
-                ),
-                children: List.generate(
-                  diary.imageList == null ? 0 : diary.imageList.length,
-                  (index) {
-                    String path = join(
-                        SpUtil.getString('sdcard'), diary.imageList[index]);
-                    return Image.file(
-                      File(path),
-                      fit: BoxFit.cover,
-                    );
-                  },
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Column(
+            children: <Widget>[
+              SelectRowWidget(
+                title: '时间',
+                content:
+                '${DateUtil.formatDateMs(diary?.date, format: 'yyyy年MM月dd日')}',
+                onTap: () {
+                  DatePicker.showDatePicker(
+                    context,
+                    locale: DateTimePickerLocale.zh_cn,
+                    onClose: () {},
+                    onConfirm: (dateTime, selectedIndex) {
+                      setState(() {
+                        diary.date = dateTime.millisecondsSinceEpoch;
+                      });
+                    },
+                  );
+                },
+              ),
+              Gaps.hLine,
+//              EditRowWidget(
+//                title: '内容',
+//                controller: contentController,
+//              ),
+//              Gaps.hLine,
+              EditRowWidget(
+                title: '成就',
+                controller: achievementController,
+              ),
+              Gaps.hLine,
+              EditRowWidget(
+                title: '节日',
+                controller: festivalController,
+              ),
+              Gaps.hLine,
+              TextAreaWidget(
+                maxLines: 4,
+                title: '内容',
+                controller: contentController,
+                hintText: '请输入内容',
+              ),
+              Gaps.hLine,
+              Gaps.vGap5,
+              //没有选取附件则隐藏GridView
+              Offstage(
+                offstage: diary.imageList == null || diary.imageList.length == 0,
+                child: GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 4,
+                  childAspectRatio: 1,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 0,
+                    vertical: 5,
+                  ),
+                  children: List.generate(
+                    diary.imageList == null ? 0 : diary.imageList.length,
+                        (index) {
+                      String path = join(
+                          SpUtil.getString('sdcard'), diary.imageList[index]);
+                      return Image.file(
+                        File(path),
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-            Gaps.vGap5,
-            Row(
-              children: <Widget>[
-                ClipButton(
-                  text: '选择图片',
-                  height: 43,
-                  icon: Icons.image,
-                  color: Colors.pinkAccent,
-                  onTap: () async {
-                    List<Asset> assetList = await SystemUtils.loadAssets([]);
-                    diary.images =
-                        (await Future.wait(assetList.map((asset) async {
-                      File file = File(join(
-                          await FileUtils.getSDCardDirectory(), asset.name));
-                      ByteData byteData = await asset.getByteData();
-                      file.writeAsBytesSync(byteData.buffer.asUint8List());
-                      return asset.name;
-                    }).toList()))
-                            .join(',');
-                    setState(() {});
-                  },
-                ),
-                Gaps.hGap20,
-                ClipButton(
-                  text: () {
-                    if (widget.type == 0) {
-                      return '添加回忆';
-                    } else if (widget.type == 1) {
-                      return '修改回忆';
-                    } else {
-                      return '未知回忆';
-                    }
-                  }(),
-                  height: 43,
-                  icon: Icons.note_add,
-                  color: Colors.pinkAccent,
-                  onTap: () async {
-                    if (diary.date == null) {
-                      _scaffoldKey.currentState.showSnackBar(
-                        SnackBar(
-                          content: Text('请选择时间！'),
-                          action: SnackBarAction(
-                            label: '我知道了',
-                            onPressed: () {},
-                          ),
-                        ),
-                      );
-                    } else if (contentController.text == null ||
-                        contentController.text == '') {
-                      _scaffoldKey.currentState.showSnackBar(
-                        SnackBar(
-                          content: Text('请输入内容！'),
-                          action: SnackBarAction(
-                            label: '我知道了',
-                            onPressed: () {},
-                          ),
-                        ),
-                      );
-                    } else {
-                      try {
-                        await provider?.open();
-                        diary.content = contentController.text;
-                        diary.festival = festivalController.text;
-                        diary.achievement = achievementController.text;
-                        if (widget.type == 0) {
-                          await provider.insert(diary);
-                        } else if (widget.type == 1) {
-                          await provider.update(diary);
-                        } else {
-                          throw Exception('位置的类型,type=${widget.type}');
-                        }
-                        Navigator.pop(context, true);
-                      } catch (e) {
-                        Toast.show('添加回忆错误！错误信息$e');
-                      } finally {
-                        await provider?.close();
+              Gaps.vGap5,
+              Row(
+                children: <Widget>[
+                  ClipButton(
+                    text: '选择图片',
+                    height: 43,
+                    icon: Icons.image,
+                    color: Colors.pinkAccent,
+                    onTap: () async {
+                      List<Asset> assetList = await SystemUtils.loadAssets([]);
+                      diary.images =
+                          (await Future.wait(assetList.map((asset) async {
+                            File file = File(join(
+                                await FileUtils.getSDCardDirectory(), asset.name));
+                            ByteData byteData = await asset.getByteData();
+                            file.writeAsBytesSync(byteData.buffer.asUint8List());
+                            return asset.name;
+                          }).toList()))
+                              .join(',');
+                      setState(() {});
+                    },
+                  ),
+                  Gaps.hGap20,
+                  ClipButton(
+                    text: () {
+                      if (widget.type == 0) {
+                        return '添加回忆';
+                      } else if (widget.type == 1) {
+                        return '修改回忆';
+                      } else {
+                        return '未知回忆';
                       }
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
+                    }(),
+                    height: 43,
+                    icon: Icons.note_add,
+                    color: Colors.pinkAccent,
+                    onTap: () async {
+                      if (diary.date == null) {
+                        _scaffoldKey.currentState.showSnackBar(
+                          SnackBar(
+                            content: Text('请选择时间！'),
+                            action: SnackBarAction(
+                              label: '我知道了',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                      } else if (contentController.text == null ||
+                          contentController.text == '') {
+                        _scaffoldKey.currentState.showSnackBar(
+                          SnackBar(
+                            content: Text('请输入内容！'),
+                            action: SnackBarAction(
+                              label: '我知道了',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                      } else {
+                        try {
+                          await provider?.open();
+                          diary.content = contentController.text;
+                          diary.festival = festivalController.text;
+                          diary.achievement = achievementController.text;
+                          if (widget.type == 0) {
+                            await provider.insert(diary);
+                          } else if (widget.type == 1) {
+                            await provider.update(diary);
+                          } else {
+                            throw Exception('位置的类型,type=${widget.type}');
+                          }
+                          Navigator.pop(context, true);
+                        } catch (e) {
+                          Toast.show('添加回忆错误！错误信息$e');
+                        } finally {
+                          await provider?.close();
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

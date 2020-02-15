@@ -70,13 +70,11 @@ class _MyHomePageState extends State<MyHomePage> {
       asset: "my_secret.mp3",
       folder: "assets/music/",
     ));
-    assetsAudioPlayer.finished.listen((finished){
-      assetsAudioPlayer.playOrPause();
-    });
   }
 
   @override
   void dispose() {
+    assetsAudioPlayer.stop();
     assetsAudioPlayer.dispose();
     super.dispose();
   }
