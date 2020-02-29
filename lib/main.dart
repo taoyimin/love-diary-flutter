@@ -6,6 +6,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:love_diary/image_detail_page.dart';
 import 'package:love_diary/res/colors.dart';
 import 'package:love_diary/res/gaps.dart';
 import 'package:love_diary/util/file_utils.dart';
@@ -15,7 +16,6 @@ import 'package:path/path.dart';
 
 import 'add_diary_page.dart';
 import 'bean/diary.dart';
-import 'common/common_widget.dart';
 import 'util/toast_utils.dart';
 
 void main() async {
@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                  child: InkWellButton(
+                  child: GestureDetector(
                     onLongPress: () async {
                       bool success = await Navigator.push(
                         context,
@@ -150,113 +150,124 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                       );
-                      if (success) {
+                      if (success != null && success) {
                         refreshController.callRefresh();
                       }
                     },
-                    children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            UIUtils.getBoxShadow(),
-                          ],
-                        ),
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  '${DateUtil.formatDateMs(diaryList[index].date, format: 'yyyy年MM月dd日')}',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                Offstage(
-                                  offstage: TextUtil.isEmpty(
-                                      diaryList[index].festival),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Gaps.hGap10,
-                                      Image.asset(
-                                        'assets/images/icon_festival.png',
-                                        width: 15,
-                                        height: 15,
-                                        fit: BoxFit.cover,
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          UIUtils.getBoxShadow(),
+                        ],
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                '${DateUtil.formatDateMs(diaryList[index].date, format: 'yyyy年MM月dd日')}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              Offstage(
+                                offstage:
+                                    TextUtil.isEmpty(diaryList[index].festival),
+                                child: Row(
+                                  children: <Widget>[
+                                    Gaps.hGap10,
+                                    Image.asset(
+                                      'assets/images/icon_festival.png',
+                                      width: 15,
+                                      height: 15,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    Gaps.hGap6,
+                                    Text(
+                                      '${diaryList[index].festival}',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.pinkAccent,
                                       ),
-                                      Gaps.hGap6,
-                                      Text(
-                                        '${diaryList[index].festival}',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.pinkAccent,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Gaps.vGap8,
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Text(
+                                  '${diaryList[index].content}',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colours.secondary_text),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Gaps.vGap5,
+                          Offstage(
+                            offstage: diaryList[index].imageList == null ||
+                                diaryList[index].imageList.length == 0,
+                            child: GridView.count(
+                              shrinkWrap: true,
+                              crossAxisCount: 4,
+                              childAspectRatio: 1,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 0,
+                                vertical: 5,
+                              ),
+                              children: List.generate(
+                                diaryList[index].imageList == null
+                                    ? 0
+                                    : diaryList[index].imageList.length,
+                                (imageIndex) {
+                                  String path = join(SpUtil.getString('sdcard'),
+                                      diaryList[index].imageList[imageIndex]);
+                                  return InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ImageDetailPage(path),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                                      );
+                                    },
+                                    child: Image.file(
+                                      File(path),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                            Gaps.vGap8,
-                            Row(
+                          ),
+                          Gaps.vGap5,
+                          Offstage(
+                            offstage:
+                                TextUtil.isEmpty(diaryList[index].achievement),
+                            child: Row(
                               children: <Widget>[
                                 Expanded(
                                   child: Text(
-                                    '${diaryList[index].content}',
+                                    '🥇 已解锁成就"${diaryList[index].achievement}"',
                                     style: TextStyle(
-                                        fontSize: 15,
-                                        color: Colours.secondary_text),
+                                        fontSize: 12, color: Colors.pinkAccent),
                                   ),
                                 ),
                               ],
                             ),
-                            Gaps.vGap5,
-                            Offstage(
-                              offstage: diaryList[index].imageList == null || diaryList[index].imageList.length == 0,
-                              child: GridView.count(
-                                shrinkWrap: true,
-                                crossAxisCount: 4,
-                                childAspectRatio: 1,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 0,
-                                  vertical: 5,
-                                ),
-                                children: List.generate(
-                                  diaryList[index].imageList == null ? 0 : diaryList[index].imageList.length,
-                                      (imageIndex) {
-                                    String path = join(
-                                        SpUtil.getString('sdcard'), diaryList[index].imageList[imageIndex]);
-                                    return Image.file(
-                                      File(path),
-                                      fit: BoxFit.cover,
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                            Gaps.vGap5,
-                            Offstage(
-                              offstage: TextUtil.isEmpty(
-                                  diaryList[index].achievement),
-                              child: Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Text(
-                                      '🥇 已解锁成就"${diaryList[index].achievement}"',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.pinkAccent),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 );
               },
@@ -290,7 +301,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 width: 16,
               ),
               InkWell(
-                onTap: (){
+                onTap: () {
                   assetsAudioPlayer.playOrPause();
                 },
                 child: Container(
