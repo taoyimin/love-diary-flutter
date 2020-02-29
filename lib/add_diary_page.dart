@@ -131,11 +131,6 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                 },
               ),
               Gaps.hLine,
-//              EditRowWidget(
-//                title: '内容',
-//                controller: contentController,
-//              ),
-//              Gaps.hLine,
               EditRowWidget(
                 title: '成就',
                 controller: achievementController,
@@ -172,6 +167,7 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                         (index) {
                       String path = join(
                           SpUtil.getString('sdcard'), diary.imageList[index]);
+                      print(path);
                       return Image.file(
                         File(path),
                         fit: BoxFit.cover,
@@ -220,7 +216,7 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                       if (diary.date == null) {
                         _scaffoldKey.currentState.showSnackBar(
                           SnackBar(
-                            content: Text('请选择时间！'),
+                            content: const Text('请选择时间！'),
                             action: SnackBarAction(
                               label: '我知道了',
                               onPressed: () {},
@@ -231,7 +227,7 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                           contentController.text == '') {
                         _scaffoldKey.currentState.showSnackBar(
                           SnackBar(
-                            content: Text('请输入内容！'),
+                            content: const Text('请输入内容！'),
                             action: SnackBarAction(
                               label: '我知道了',
                               onPressed: () {},
@@ -249,7 +245,7 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                           } else if (widget.type == 1) {
                             await provider.update(diary);
                           } else {
-                            throw Exception('位置的类型,type=${widget.type}');
+                            throw Exception('未知的类型,type=${widget.type}');
                           }
                           Navigator.pop(context, true);
                         } catch (e) {
