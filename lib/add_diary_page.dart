@@ -167,7 +167,6 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                         (index) {
                       String path = join(
                           SpUtil.getString('sdcard'), diary.imageList[index]);
-                      print(path);
                       return Image.file(
                         File(path),
                         fit: BoxFit.cover,
