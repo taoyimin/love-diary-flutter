@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileUtils {
@@ -26,12 +27,6 @@ class FileUtils {
   //根据文件名获取本地路径 传入真实文件名
   static Future<String> getAttachmentLocalPathByFileName(
       String fileName) async {
-    return '${await getApplicationDirectory()}/$fileName';
-  }
-
-  //清空缓存文件
-  static Future<void> clearApplicationDirectory() async {
-    String appDocDir = await getApplicationDirectory();
-    File(appDocDir).deleteSync(recursive: true);
+    return join(await getApplicationDirectory(), fileName);
   }
 }
