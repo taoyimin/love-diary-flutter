@@ -27,22 +27,20 @@ class AddDiaryPage extends StatefulWidget {
 
 class _AddDiaryPageState extends State<AddDiaryPage> {
   Diary diary;
-  DiaryProvider provider;
+  DiaryProvider provider = DiaryProvider();
 
-  TextEditingController contentController;
-  TextEditingController festivalController;
-  TextEditingController achievementController;
+  final TextEditingController contentController = TextEditingController();
+  final TextEditingController festivalController= TextEditingController();
+  final TextEditingController achievementController= TextEditingController();
 
-  var _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<Asset> assetList;
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     diary = widget.diary ?? Diary();
-    provider = DiaryProvider();
-    contentController = TextEditingController();
-    festivalController = TextEditingController();
-    achievementController = TextEditingController();
     contentController.text = diary.content;
     festivalController.text = diary.festival;
     achievementController.text = diary.achievement;
@@ -184,13 +182,13 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                     icon: Icons.image,
                     color: Colors.pinkAccent,
                     onTap: () async {
-                      List<Asset> assetList = await SystemUtils.loadAssets([]);
+                      assetList = await SystemUtils.loadAssets(assetList);
                       diary.images =
                           (await Future.wait(assetList.map((asset) async {
                             File file = File(join(
                                 await FileUtils.getSDCardDirectory(), asset.name));
                             ByteData byteData = await asset.getByteData();
-                            file.writeAsBytesSync(byteData.buffer.asUint8List());
+                            await file.writeAsBytes(byteData.buffer.asUint8List());
                             return asset.name;
                           }).toList()))
                               .join(',');
