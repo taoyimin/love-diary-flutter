@@ -83,7 +83,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('我们已经认识${getDays()}天'),
+        title: InkWell(
+          onTap: () {
+            setState(() {
+              SpUtil.putInt('titleType',
+                  (SpUtil.getInt('titleType', defValue: 0) + 1) % 2);
+            });
+          },
+          child: Text('${getTitle()}'),
+        ),
         centerTitle: true,
       ),
       body: EasyRefresh.custom(
@@ -219,6 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               childAspectRatio: 1,
                               crossAxisSpacing: 10,
                               mainAxisSpacing: 10,
+                              physics: NeverScrollableScrollPhysics(),
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 0,
                                 vertical: 5,
@@ -358,9 +367,18 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  static int getDays() {
-    DateTime firstTime = DateTime(2020, 1, 20, 19, 30);
-    Duration duration = DateTime.now().difference(firstTime);
-    return duration.inDays;
+  static String getTitle() {
+    switch (SpUtil.getInt('titleType', defValue: 0)) {
+      case 0:
+        DateTime firstTime = DateTime(2020, 1, 20, 19, 30);
+        Duration duration = DateTime.now().difference(firstTime);
+        return '我们已经认识${duration.inDays}天';
+      case 1:
+        DateTime firstTime = DateTime(2020, 2, 14, 21, 0);
+        Duration duration = DateTime.now().difference(firstTime);
+        return '我们已经在一起${duration.inDays}天';
+      default:
+        return '未知的标题类型';
+    }
   }
 }
