@@ -68,12 +68,14 @@ class MarkDayProvider {
 
   Future open() async {
     db = await openDatabase(
-        join(await FileUtils.getSDCardDirectory(), 'diary_db.db'),
-        version: Constants.DATABASE_VERSION,
-        onUpgrade: (Database db, int oldVersion, int newVersion) async {
-      Toast.show('创建纪念日表');
-      try {
-        await db.execute('''
+      join(await FileUtils.getSDCardDirectory(), 'diary_db.db'),
+      version: Constants.DATABASE_VERSION,
+      onUpgrade: (Database db, int oldVersion, int newVersion) async {
+        if(newVersion == 5){
+          print('创建纪念日表');
+          Toast.show('创建纪念日表');
+          try {
+            await db.execute('''
 create table $tableMarkDay ( 
   $columnId integer primary key autoincrement, 
   $columnContent text not null,
@@ -84,27 +86,12 @@ create table $tableMarkDay (
   $column2 text,
   $column3 text)
 ''');
-      } catch (e) {
-        Toast.show('创建纪念日表失败：$e');
-      }
-    }, onCreate: (Database db, int version) async {
-      Toast.show('创建纪念日表');
-      try {
-        await db.execute('''
-create table $tableMarkDay ( 
-  $columnId integer primary key autoincrement, 
-  $columnContent text not null,
-  $columnType integer not null,
-  $columnDate timestamp not null,
-  $columnImages text,
-  $column1 text,
-  $column2 text,
-  $column3 text)
-''');
-      } catch (e) {
-        Toast.show('创建纪念日表失败：$e');
-      }
-    });
+          } catch (e) {
+            Toast.show('创建纪念日表失败：$e');
+          }
+        }
+      },
+    );
   }
 
   Future<MarkDay> insert(MarkDay markDay) async {

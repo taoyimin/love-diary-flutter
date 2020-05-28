@@ -7,12 +7,12 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 class SystemUtils {
 
   /// 调用图片选择器 [selectedAssets]为默认选中的图片
-  static Future<List<Asset>> loadAssets(List<Asset> selectedAssets) async {
+  static Future<List<Asset>> loadAssets(List<Asset> selectedAssets, {int maxImages=20}) async {
     List<Asset> resultAssets;
     try {
       resultAssets = await MultiImagePicker.pickImages(
         enableCamera: true,
-        maxImages: 10,
+        maxImages: maxImages,
         selectedAssets: selectedAssets ?? List<Asset>(),
         materialOptions: MaterialOptions(
           actionBarTitle: '选取图片',

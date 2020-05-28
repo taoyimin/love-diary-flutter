@@ -26,16 +26,13 @@ class AddDiaryPage extends StatefulWidget {
 }
 
 class _AddDiaryPageState extends State<AddDiaryPage> {
-  Diary diary;
-  DiaryProvider provider = DiaryProvider();
-
-  final TextEditingController contentController = TextEditingController();
-  final TextEditingController festivalController= TextEditingController();
-  final TextEditingController achievementController= TextEditingController();
-
-  List<Asset> assetList;
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final DiaryProvider provider = DiaryProvider();
+  final TextEditingController contentController = TextEditingController();
+  final TextEditingController festivalController = TextEditingController();
+  final TextEditingController achievementController = TextEditingController();
+  Diary diary;
+  List<Asset> assetList;
 
   @override
   void initState() {
@@ -59,7 +56,15 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('添加回忆'),
+        title: Text(() {
+          if (widget.type == 0) {
+            return '添加回忆';
+          } else if (widget.type == 1) {
+            return '修改回忆';
+          } else {
+            return '未知类型type=${widget.type}';
+          }
+        }()),
         backgroundColor: Colors.pinkAccent,
         actions: <Widget>[
           Offstage(
@@ -83,14 +88,14 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                         FlatButton(
                           onPressed: () async {
                             try {
-                              await provider.open();
-                              await provider.delete(diary.id);
+                              await provider?.open();
+                              await provider?.delete(diary.id);
                               Navigator.pop(context);
                               Navigator.pop(context, true);
                             } catch (e) {
                               Toast.show('删除回忆错误！错误信息$e');
                             } finally {
-                              await provider.close();
+                              await provider?.close();
                             }
                           },
                           child: const Text("确认"),
@@ -114,7 +119,7 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
               SelectRowWidget(
                 title: '时间',
                 content:
-                '${DateUtil.formatDateMs(diary?.date, format: 'yyyy年MM月dd日')}',
+                    '${DateUtil.formatDateMs(diary?.date, format: 'yyyy年MM月dd日')}',
                 onTap: () {
                   DatePicker.showDatePicker(
                     context,
@@ -149,7 +154,8 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
               Gaps.vGap5,
               //没有选取附件则隐藏GridView
               Offstage(
-                offstage: diary.imageList == null || diary.imageList.length == 0,
+                offstage:
+                    diary.imageList == null || diary.imageList.length == 0,
                 child: GridView.count(
                   shrinkWrap: true,
                   crossAxisCount: 4,
@@ -162,12 +168,14 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                   ),
                   children: List.generate(
                     diary.imageList == null ? 0 : diary.imageList.length,
-                        (index) {
+                    (index) {
                       String path = join(
                           SpUtil.getString('sdcard'), diary.imageList[index]);
                       return Image.file(
                         File(path),
                         fit: BoxFit.cover,
+                        filterQuality: FilterQuality.low,
+                        cacheWidth: 100,
                       );
                     },
                   ),
@@ -185,12 +193,12 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                       assetList = await SystemUtils.loadAssets(assetList);
                       diary.images =
                           (await Future.wait(assetList.map((asset) async {
-                            File file = File(join(
-                                await FileUtils.getSDCardDirectory(), asset.name));
-                            ByteData byteData = await asset.getByteData();
-                            await file.writeAsBytes(byteData.buffer.asUint8List());
-                            return asset.name;
-                          }).toList()))
+                        File file = File(join(
+                            await FileUtils.getSDCardDirectory(), asset.name));
+                        ByteData byteData = await asset.getByteData();
+                        await file.writeAsBytes(byteData.buffer.asUint8List());
+                        return asset.name;
+                      }).toList()))
                               .join(',');
                       setState(() {});
                     },
@@ -203,7 +211,7 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                       } else if (widget.type == 1) {
                         return '修改回忆';
                       } else {
-                        return '未知回忆';
+                        return '未知类型type=${widget.type}';
                       }
                     }(),
                     height: 43,
@@ -246,7 +254,7 @@ class _AddDiaryPageState extends State<AddDiaryPage> {
                           }
                           Navigator.pop(context, true);
                         } catch (e) {
-                          Toast.show('添加回忆错误！错误信息$e');
+                          Toast.show('更新回忆错误！错误信息$e');
                         } finally {
                           await provider?.close();
                         }

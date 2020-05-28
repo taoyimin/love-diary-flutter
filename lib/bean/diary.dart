@@ -1,3 +1,4 @@
+import 'package:love_diary/res/constants.dart';
 import 'package:love_diary/util/file_utils.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -71,8 +72,9 @@ class DiaryProvider {
   Future open() async {
     db = await openDatabase(
       join(await FileUtils.getSDCardDirectory(), 'diary_db.db'),
-      version: 1,
+      version: Constants.DATABASE_VERSION,
       onCreate: (Database db, int version) async {
+        print('创建日记表');
         await db.execute('''
 create table $tableDiary ( 
   $columnId integer primary key autoincrement, 

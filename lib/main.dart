@@ -16,6 +16,7 @@ import 'package:path/path.dart';
 
 import 'add_diary_page.dart';
 import 'bean/diary.dart';
+import 'mark_day_list_page.dart';
 import 'util/toast_utils.dart';
 
 void main() async {
@@ -40,7 +41,15 @@ class MyApp extends StatelessWidget {
           const Locale.fromSubtags(languageCode: 'zh'),
         ],
         theme: ThemeData(
-          primarySwatch: Colors.pink,
+          primaryColor: Colors.pinkAccent,
+          accentColor: Colors.pinkAccent,
+          brightness: Brightness.light,
+          primaryColorBrightness: Brightness.dark,
+          // 设置中文和英文的基准线一致
+          textTheme: const TextTheme(
+            subhead: TextStyle(textBaseline: TextBaseline.alphabetic),
+            //subtitle1: TextStyle(textBaseline: TextBaseline.alphabetic),
+          ),
         ),
         home: MyHomePage(),
       ),
@@ -66,10 +75,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    assetsAudioPlayer.open(AssetsAudio(
-      asset: "my_secret.mp3",
-      folder: "assets/music/",
-    ));
+    assetsAudioPlayer.open(
+      Audio('assets/audios/my_secret.mp3'),
+      autoStart: false,
+      showNotification: true,
+    );
   }
 
   @override
@@ -107,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
             await provider?.open();
             diaryList.clear();
             List<Diary> tempList =
-                await provider.getDiaryList(limit: limit, offset: offset);
+            await provider?.getDiaryList(limit: limit, offset: offset);
             diaryList.addAll(tempList);
             refreshController.resetLoadState();
             refreshController.finishRefresh(success: true);
@@ -122,9 +132,9 @@ class _MyHomePageState extends State<MyHomePage> {
         onLoad: () async {
           try {
             offset = offset + limit;
-            await provider.open();
+            await provider?.open();
             List<Diary> tempList =
-                await provider.getDiaryList(limit: limit, offset: offset);
+            await provider?.getDiaryList(limit: limit, offset: offset);
             diaryList.addAll(tempList);
             if (tempList.length < limit) {
               refreshController.finishLoad(success: true, noMore: true);
@@ -134,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
           } catch (e) {
             Toast.show('$e');
           } finally {
-            await provider.close();
+            await provider?.close();
             setState(() {});
           }
           return;
@@ -142,11 +152,10 @@ class _MyHomePageState extends State<MyHomePage> {
         slivers: <Widget>[
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                //创建列表项
+                  (BuildContext context, int index) {
                 return Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                   child: GestureDetector(
                     onLongPress: () async {
                       bool success = await Navigator.push(
@@ -180,8 +189,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 style: TextStyle(fontSize: 16),
                               ),
                               Offstage(
-                                offstage:
-                                    TextUtil.isEmpty(diaryList[index].festival),
+                                offstage: TextUtil.isEmpty(
+                                    diaryList[index].festival),
                                 child: Row(
                                   children: <Widget>[
                                     Gaps.hGap10,
@@ -236,8 +245,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 diaryList[index].imageList == null
                                     ? 0
                                     : diaryList[index].imageList.length,
-                                (imageIndex) {
-                                  String path = join(SpUtil.getString('sdcard'),
+                                    (imageIndex) {
+                                  String path = join(
+                                      SpUtil.getString('sdcard'),
                                       diaryList[index].imageList[imageIndex]);
                                   return InkWell(
                                     onTap: () {
@@ -252,6 +262,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child: Image.file(
                                       File(path),
                                       fit: BoxFit.cover,
+                                      filterQuality: FilterQuality.low,
+                                      cacheWidth: 100,
                                     ),
                                   );
                                 },
@@ -260,15 +272,16 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           Gaps.vGap5,
                           Offstage(
-                            offstage:
-                                TextUtil.isEmpty(diaryList[index].achievement),
+                            offstage: TextUtil.isEmpty(
+                                diaryList[index].achievement),
                             child: Row(
                               children: <Widget>[
                                 Expanded(
                                   child: Text(
                                     '🥇 已解锁成就"${diaryList[index].achievement}"',
                                     style: TextStyle(
-                                        fontSize: 12, color: Colors.pinkAccent),
+                                        fontSize: 12,
+                                        color: Colors.pinkAccent),
                                   ),
                                 ),
                               ],
@@ -295,7 +308,6 @@ class _MyHomePageState extends State<MyHomePage> {
             refreshController.callRefresh();
           }
         },
-        backgroundColor: Colors.pinkAccent,
         child: Icon(Icons.favorite),
         shape: const CircleBorder(),
       ),
@@ -347,7 +359,25 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Expanded(
                 flex: 1,
-                child: SizedBox(),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    IconButton(
+                      icon: Image.asset(
+                        'assets/images/icon_mark_day.png',
+                        height: 34,
+                        width: 34,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MarkDayListPage()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
 //              Container(
 //                width: 110,
@@ -370,11 +400,13 @@ class _MyHomePageState extends State<MyHomePage> {
   static String getTitle() {
     switch (SpUtil.getInt('titleType', defValue: 0)) {
       case 0:
-        DateTime firstTime = DateTime(2020, 1, 20, 19, 30);
+        // DateTime firstTime = DateTime(2020, 1, 20, 19, 30);
+        DateTime firstTime = DateTime(2020, 1, 20);
         Duration duration = DateTime.now().difference(firstTime);
         return '我们已经认识${duration.inDays}天';
       case 1:
-        DateTime firstTime = DateTime(2020, 2, 14, 21, 0);
+        // DateTime firstTime = DateTime(2020, 2, 14, 21, 0);
+        DateTime firstTime = DateTime(2020, 2, 14);
         Duration duration = DateTime.now().difference(firstTime);
         return '我们已经在一起${duration.inDays}天';
       default:
