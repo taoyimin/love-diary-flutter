@@ -11,7 +11,7 @@ description: A new Flutter application.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.2+3
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -23,26 +23,25 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_cupertino_localizations: ^1.0.1
-  cupertino_icons: ^0.1.2
-  sqflite: ^1.2.0
-  # Dart 常用工具类库 https://github.com/Sky24n/common_utils
-  common_utils: ^1.1.3
+  # cupertino_icons: ^0.1.2
+  # 数据库 https://github.com/tekartik/sqflite
+  sqflite: ^1.3.0+2
   # Flutter 常用工具类库 https://github.com/Sky24n/flustars
-  flustars: 0.2.6+1
+  flustars: 0.3.2
   # 选择时间插件 https://github.com/dylanwuzh/flutter-cupertino-date-picker/blob/master/README_zh-cn.md
-  flutter_cupertino_date_picker: ^1.0.12
+  flutter_cupertino_date_picker: ^1.0.26
   # 图片选择器 https://github.com/Sh1d0w/multi_image_picker
-  multi_image_picker: ^4.6.1
+  multi_image_picker: ^4.6.7
   # Toast插件 https://github.com/OpenFlutter/flutter_oktoast
-  oktoast: ^2.2.0
+  oktoast: ^2.3.2
   # 获取系统文件路径 https://github.com/flutter/plugins/tree/master/packages/path_provider
-  path_provider: ^1.5.1
+  path_provider: ^1.6.9
   # 跨平台路径操作库 https://github.com/dart-lang/path
   path: ^1.6.4
   # 下拉刷新上拉加载库 https://github.com/xuelongqy/flutter_easyrefresh
-  flutter_easyrefresh: ^2.0.8
+  flutter_easyrefresh: ^2.1.1
   # 播放assets音频文件
-  assets_audio_player: ^1.0.1
+  assets_audio_player: ^1.6.2+4
   # 查看图片控件 https://github.com/renancaraujo/photo_view
   photo_view: ^0.9.2
 
@@ -69,7 +68,7 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/music/
+    - assets/audios/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
