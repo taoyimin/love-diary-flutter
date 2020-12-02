@@ -1,5 +1,7 @@
+import 'package:flustars/flustars.dart';
 import 'package:love_diary/res/constants.dart';
 import 'package:love_diary/util/file_utils.dart';
+import 'package:love_diary/util/toast_utils.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
@@ -72,10 +74,11 @@ class DiaryProvider {
   Future open() async {
     db = await openDatabase(
       join(await FileUtils.getSDCardDirectory(), 'diary_db.db'),
-      version: Constants.DATABASE_VERSION,
+      version: 6,
       onCreate: (Database db, int version) async {
-        print('创建日记表');
-        await db.execute('''
+        Toast.show('创建日记表');
+        try {
+          await db.execute('''
 create table $tableDiary ( 
   $columnId integer primary key autoincrement, 
   $columnContent text not null,
@@ -87,6 +90,9 @@ create table $tableDiary (
   $column2 text,
   $column3 text)
 ''');
+        } catch (e) {
+          Toast.show('创建日记表失败：$e');
+        }
       },
     );
   }

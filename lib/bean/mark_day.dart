@@ -69,10 +69,9 @@ class MarkDayProvider {
   Future open() async {
     db = await openDatabase(
       join(await FileUtils.getSDCardDirectory(), 'diary_db.db'),
-      version: Constants.DATABASE_VERSION,
+      version: 6,
       onUpgrade: (Database db, int oldVersion, int newVersion) async {
-        if(newVersion == 5){
-          print('创建纪念日表');
+        if(newVersion == 6){
           Toast.show('创建纪念日表');
           try {
             await db.execute('''

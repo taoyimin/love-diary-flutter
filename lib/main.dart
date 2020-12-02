@@ -76,7 +76,16 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     assetsAudioPlayer.open(
-      Audio('assets/audios/my_secret.mp3'),
+      Audio(
+        'assets/audios/my_secret.mp3',
+        metas: Metas(
+          title: "我的秘密",
+          artist: "G.E.M. 邓紫棋",
+          album: "My Secret",
+          image: MetasImage.asset(
+              "assets/images/my_secret.jpg"), //can be MetasImage.network
+        ),
+      ),
       autoStart: false,
       showNotification: true,
     );
@@ -117,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
             await provider?.open();
             diaryList.clear();
             List<Diary> tempList =
-            await provider?.getDiaryList(limit: limit, offset: offset);
+                await provider?.getDiaryList(limit: limit, offset: offset);
             diaryList.addAll(tempList);
             refreshController.resetLoadState();
             refreshController.finishRefresh(success: true);
@@ -134,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
             offset = offset + limit;
             await provider?.open();
             List<Diary> tempList =
-            await provider?.getDiaryList(limit: limit, offset: offset);
+                await provider?.getDiaryList(limit: limit, offset: offset);
             diaryList.addAll(tempList);
             if (tempList.length < limit) {
               refreshController.finishLoad(success: true, noMore: true);
@@ -152,10 +161,10 @@ class _MyHomePageState extends State<MyHomePage> {
         slivers: <Widget>[
           SliverList(
             delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
+              (BuildContext context, int index) {
                 return Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                   child: GestureDetector(
                     onLongPress: () async {
                       bool success = await Navigator.push(
@@ -189,8 +198,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 style: TextStyle(fontSize: 16),
                               ),
                               Offstage(
-                                offstage: TextUtil.isEmpty(
-                                    diaryList[index].festival),
+                                offstage:
+                                    TextUtil.isEmpty(diaryList[index].festival),
                                 child: Row(
                                   children: <Widget>[
                                     Gaps.hGap10,
@@ -245,9 +254,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 diaryList[index].imageList == null
                                     ? 0
                                     : diaryList[index].imageList.length,
-                                    (imageIndex) {
-                                  String path = join(
-                                      SpUtil.getString('sdcard'),
+                                (imageIndex) {
+                                  String path = join(SpUtil.getString('sdcard'),
                                       diaryList[index].imageList[imageIndex]);
                                   return InkWell(
                                     onTap: () {
@@ -272,16 +280,15 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           Gaps.vGap5,
                           Offstage(
-                            offstage: TextUtil.isEmpty(
-                                diaryList[index].achievement),
+                            offstage:
+                                TextUtil.isEmpty(diaryList[index].achievement),
                             child: Row(
                               children: <Widget>[
                                 Expanded(
                                   child: Text(
                                     '🥇 已解锁成就"${diaryList[index].achievement}"',
                                     style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.pinkAccent),
+                                        fontSize: 12, color: Colors.pinkAccent),
                                   ),
                                 ),
                               ],
